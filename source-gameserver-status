@@ -1,0 +1,31 @@
+#!/bin/bash
+# Source engine monitoring script - by ZoliBen
+
+# Set the gameserver IP address (if you're running the script on the same host where the server runs, you still need to provide the non-localhost IP because of how rcon works.
+# This script depends on the rcon tool provided here: https://github.com/n0la/rcon
+ip=192.168.100.1
+
+# rcon server port
+port=17427
+
+# rcon password
+password=""
+
+output="$(rcon -H $ip -p $port -P $password status)"
+#echo "$output"
+servername=$(echo "$output" | grep hostname | awk -F':' '{print $2}')
+#echo "$servername"
+serveraddress=$(echo "$output" | grep udp | awk -F':' '{print $2 ":" $3 $4}')
+#echo "$serveraddress"
+map=$(echo "$output" | grep map | awk -F':' '{print $2}' | tr -d "[:space:]")
+#echo "$map"
+players=$(echo "$output" | grep players | awk -F':' '{print $2}' | awk -F' ' '{print $1}' | tr -d "[:space:]")
+#echo $players
+bots=$(echo "$output" | grep players | awk -F':' '{print $2}' | awk -F' ' '{print $3}' | tr -d "[:space:]")
+#echo $bots
+
+echo "0 ServerName - $servername"
+echo "0 ServerAddress - $serveraddress"
+echo "0 ServerMap - The currently running map is $map"
+echo "0 ServerPlayers Players=$players - There're currely $players players playing"
+echo "0 ServerBots Bots=$bots - There're currently $bots bots active on the server"
